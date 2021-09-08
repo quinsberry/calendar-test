@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { FunctionComponent, useEffect } from 'react';
+import { Layout } from 'antd';
+import { useActions } from './hooks/useActions';
+import { PersistenceService, PersistenceValues } from './services/PersistenceService';
 import './App.css';
+import { Navbar } from './components/Navbar';
+import { AppRouter } from './components/AppRouter';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+export const App: FunctionComponent = () => {
+    const { setUser, setIsAuth } = useActions();
 
-export default App;
+    useEffect(() => {
+        if (PersistenceService.getValue(PersistenceValues.Auth)) {
+            const username = PersistenceService.getValue(PersistenceValues.Username) ?? '';
+            setUser({ username, password: '123' });
+            setIsAuth(true);
+        }
+    }, []);
+
+    return (
+        <Layout>
+            <Navbar/>
+            <Layout.Content>
+                <AppRouter/>
+            </Layout.Content>
+        </Layout>
+    );
+};
