@@ -1,16 +1,18 @@
 import { AppDispatch } from '../index';
 import { eventActions } from './actions';
-import { UserApi } from '../../api/UserApi';
-import { assertType, validateFirstElementInList } from '../../utils/type-guards';
-import { isUser, User } from '../../models/User';
+import { validateFirstElementInList } from '../../utils/type-guards';
+import { isUser } from '../../models/User';
 import { Event } from '../../models/Event';
 import { PersistenceService, PersistenceValues } from '../../services/PersistenceService';
+import { ApiService } from '../../services/ApiService';
 
 export const eventOperations = {
     fetchGuests: () => async (dispatch: AppDispatch) => {
         try {
-            const response = await UserApi.getUsers();
-            assertType<User[]>(response.data, _ => validateFirstElementInList(_, isUser));
+            const response = await ApiService.user.getUsers({
+                prediction: (data) => validateFirstElementInList(data, user => isUser(user)),
+                data: {},
+            });
             dispatch(eventActions.setGuests(response.data));
         } catch (e) {
             console.log(e);
@@ -36,4 +38,4 @@ export const eventOperations = {
         }
     },
 
-}
+};

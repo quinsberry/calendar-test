@@ -14,11 +14,11 @@ type GetValue<Value extends PersistenceValues> =
     never;
 
 export class PersistenceService {
-    public static addValue<Value extends PersistenceValues>(value: Value, data: GetValue<Value>): void {
+    static addValue<Value extends PersistenceValues>(value: Value, data: GetValue<Value>): void {
         window.localStorage.setItem(value, JSON.stringify(data));
     }
 
-    public static getValue<Value extends PersistenceValues>(value: Value): GetValue<Value> {
+    static getValue<Value extends PersistenceValues>(value: Value): GetValue<Value> {
         switch (value) {
             case PersistenceValues.Auth: {
                 const auth = this.getStorageValue(value);
@@ -40,7 +40,7 @@ export class PersistenceService {
         }
     }
 
-    public static removeValue(value: PersistenceValues): void {
+    static removeValue(value: PersistenceValues): void {
         window.localStorage.removeItem(value);
     }
 

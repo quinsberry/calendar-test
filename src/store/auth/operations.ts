@@ -1,17 +1,19 @@
 import { AppDispatch } from '../index';
 import { authActions } from './actions';
-import { UserApi } from '../../api/UserApi';
 import { PersistenceService, PersistenceValues } from '../../services/PersistenceService';
-import { assertType, validateFirstElementInList } from '../../utils/type-guards';
-import { isUser, User } from '../../models/User';
+import { validateFirstElementInList } from '../../utils/type-guards';
+import { isUser } from '../../models/User';
+import { ApiService } from '../../services/ApiService';
 
 export const authOperations = {
     login: (username: string, password: string) => async (dispatch: AppDispatch) => {
         try {
             dispatch(authActions.setIsLoading());
             setTimeout(async () => {
-                const response = await UserApi.getUsers();
-                assertType<User[]>(response.data, _ => validateFirstElementInList(_, isUser));
+                const response = await ApiService.user.getUsers({
+                    prediction: (data) => validateFirstElementInList(data, user => isUser(user)),
+                    data: {},
+                });
                 const mockUser = response.data.find(user => user.username === username && user.password === password);
                 if (mockUser) {
                     PersistenceService.addValue(PersistenceValues.Auth, true);
